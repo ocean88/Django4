@@ -14,7 +14,7 @@ class Product(models.Model):
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
 
     def __str__(self):
-        return f"Название: {self.name}, Описание: {self.description}, Изображение: {self.image}, Категория: {self.category}, Цена: {self.price}, Создано: {self.created_at}, Обновлено: {self.last_updated}"
+        return f"Название: {self.name}"
 
     class Meta:
         verbose_name = 'Товар'
@@ -27,7 +27,7 @@ class Category(models.Model):
     description = models.TextField(verbose_name="Описание")
 
     def __str__(self):
-        return f'Название: {self.name}, Описание: {self.description}'
+        return f'Название: {self.name}'
 
     class Meta:
         verbose_name = 'Категория'
