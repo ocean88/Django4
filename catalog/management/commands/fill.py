@@ -11,7 +11,7 @@ class Command(BaseCommand):
         Product.objects.all().delete()
 
         # Загрузить данные из data.json в базу данных
-        with open('data.json', 'r', encoding='windows-1251') as f:
+        with open('data.json', 'r', encoding='UTF-8') as f:
             data = json.load(f)
 
             # Создать категории
