@@ -1,20 +1,25 @@
 {% extends 'catalog/base.html' %}
+{% load my_tags %}
 {% block content %}
- {% for object in object_list %}
-        <div class="col-3">
-            <div class="card mb-4 box-shadow">
-                <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">{{object.name}}</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">{{object.price}}</h1>
-                    <ul class="list-unstyled mt-3 mb-4 text-start m-3">
-                       {{ object.description|truncatechars:100}}
-                    </ul>
-                    <a class="btn btn-lg btn-block btn-outline-primary" href="{% url 'catalog:item_detail' object.pk %}">Подробнее</a>
-                </div>
-            </div>
-
+<div class="container">
+  <div class="row">
+    {% for object in object_list %}
+    <div class="col-md-4">
+      <div class="card mb-4 box-shadow h-100">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">{{ object.name }}</h4>
         </div>
-{% endfor %}
+        <div class="card-body d-flex flex-column">
+          <img src="{{ object.image | my_media_filter }}" class="card-img-top img-fluid" style="object-fit: cover; height: 200px;">
+          <h1 class="card-title pricing-card-title">{{ object.price }}</h1>
+          <ul class="list-unstyled mt-3 mb-4 text-start">
+            <li>{{ object.description|truncatechars:100 }}</li>
+          </ul>
+          <a class="btn btn-lg btn-block btn-outline-primary mt-auto" href="{% url 'catalog:item_detail' object.pk %}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

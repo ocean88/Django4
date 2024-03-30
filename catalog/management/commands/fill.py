@@ -24,6 +24,17 @@ class Command(BaseCommand):
                 if item['model'] == 'catalog.product':
                     category_id = item['fields']['category']
                     category = Category.objects.get(pk=category_id)
-                    Product.objects.create(id=item['pk'], name=item['fields']['name'], description=item['fields']['description'], category=category, price=item['fields']['price'], created_at=item['fields']['created_at'], last_updated=item['fields']['last_updated'])
+                    image_path = item['fields'].get('image', None)  # Extract the image path from JSON data
+                    product = Product(
+                        id=item['pk'],
+                        name=item['fields']['name'],
+                        description=item['fields']['description'],
+                        category=category,
+                        price=item['fields']['price'],
+                        created_at=item['fields']['created_at'],
+                        last_updated=item['fields']['last_updated'],
+                        image=image_path  # Assign the image path to the image field
+                    )
+                    product.save()
 
         print("Data loaded successfully.")
