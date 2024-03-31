@@ -1,0 +1,10 @@
+{% extends 'catalog/base.html' %}
+{% block content %}
+{% load my_tags %}
+<div>
+    <h1>{{ object.name }}</h1>
+    <p>Стоимость: <br>{{ object.price }}руб.</p>
+    <img src="{{ object.image | my_media_filter }}">
+    <p>{{ object.description }}</p>
+</div>
+{% endblock %}

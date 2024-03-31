@@ -1,0 +1,16 @@
+{% extends 'catalog/base.html' %}
+{% block content %}
+<div class="card-body">
+    <h1>{{ object.title }}</h1>
+    {% if object.creation_date %}
+    <p><strong>Дата создания:</strong> {{ object.creation_date }}</p>
+    {% endif %}
+    <p>{{ object.body }}</p>
+    {% if object.preview %}
+    <img src="{{ object.preview.url }}" alt="Preview Image" style="max-width: 100%;">
+    {% endif %}
+    <div class="card-footer">
+        Просмотры: {{ object.views_count }}
+    </div>
+</div>
+{% endblock %}
