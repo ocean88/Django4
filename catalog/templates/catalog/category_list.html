@@ -1,6 +1,9 @@
 {% extends 'catalog/base.html' %}
 {% load my_tags %}
 {% block content %}
+<div class = 'col-12'>
+  <a class="btn btn-outline-primary" href="{% url 'catalog:product_create' %}" >Добавить продукт</a>
+</div>
 <div class="container">
   <div class="row">
     {% for object in object_list %}

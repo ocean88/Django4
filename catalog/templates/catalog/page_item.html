@@ -6,5 +6,10 @@
     <p>Стоимость: <br>{{ object.price }}руб.</p>
     <img src="{{ object.image | my_media_filter }}">
     <p>{{ object.description }}</p>
+    {% if object.active_version %}
+              <li>Актуальная версия: {{ object.active_version.version_number }} - {{ object.active_version.version_name }}</li>
+            {% else %}
+              <li>Неактуальная версия</li>
+            {% endif %}
 </div>
 {% endblock %}

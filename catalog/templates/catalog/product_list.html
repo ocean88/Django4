@@ -15,6 +15,11 @@
           <h1 class="card-title pricing-card-title">{{ object.price }}</h1>
           <ul class="list-unstyled mt-3 mb-4 text-start">
             <li>{{ object.description|truncatechars:100 }}</li>
+            {% if object.active_version %}
+              <li>Актуальная версия: {{ object.active_version.version_number }} - {{ object.active_version.version_name }}</li>
+            {% else %}
+              <li>Неактуальная версия</li>
+            {% endif %}
           </ul>
           <a class="btn btn-link" href="{% url 'catalog:item_detail' object.pk %}">Подробнее</a>
           <a class="btn btn-link" href="{% url 'catalog:product_update' pk=object.pk %}">Редактировать</a>
