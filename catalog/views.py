@@ -1,8 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.forms import inlineformset_factory, RadioSelect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 from catalog.models import Category, Product, Version
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -14,6 +14,27 @@ def get_active_version(product):
     return active_version
 
 
+class ModeratorAccessMixin(AccessMixin):
+    """
+    Миксин для проверки доступа модератора или выше к неопубликованным материалам.
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if request.user.groups.filter(name__in=['moderator']).exists():
+                return super().dispatch(request, *args, **kwargs)
+            else:
+                # Пользователь не в группе "модератор" или "администратор",
+                # поэтому мы фильтруем только опубликованные материалы
+                self.queryset = self.get_queryset().filter(is_published=True)
+                return super().dispatch(request, *args, **kwargs)
+        else:
+            return self.handle_no_permission()
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_superuser or user.groups.filter(name='moderator').exists()
+
+
 # Create your views here.
 class CatalogListView(ListView):
     model = Category
@@ -22,7 +43,7 @@ class CatalogListView(ListView):
     }
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin,ModeratorAccessMixin, ListView):
     model = Product
     context_object_name = 'products'
 
@@ -44,25 +65,28 @@ class ProductListView(ListView):
         category_item = Category.objects.get(pk=self.kwargs.get('pk'))
         context_data['category_pk'] = category_item.pk
 
+        # Добавляем флаг для модераторов, указывающий, является ли текущий пользователь модератором
+        context_data['is_moderator'] = self.request.user.groups.filter(name='moderator').exists()
+
         return context_data
 
 
-class ProductCreateView(CreateView, LoginRequiredMixin):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
 
     def form_valid(self, form):
-        product = form.save()
-        user = self.request.user
-        product.owner = user
-        product.save()
+        self.object = form.save(commit=False)
+        if self.object is not None:
+            self.object.owner = self.request.user
+            self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('catalog:index')
+        return reverse_lazy('catalog:index')  # Redirect to some other URL
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, ModeratorAccessMixin, UpdateView):
     model = Product
     form_class = ProductForm
 
@@ -85,8 +109,20 @@ class ProductUpdateView(UpdateView):
             formset.save()
         return super().form_valid(form)
 
+    def get_form_class(self):
+        user = self.request.user
+        if user.is_superuser or user.groups.filter(name='moderator').exists():
+            return ProductModeratorForm
+        else:
+            return ProductForm
+
     def get_success_url(self):
         return reverse_lazy('catalog:index')  # Redirect to some other URL
+
+    def test_func(self):
+        product = self.get_object()
+        user = self.request.user
+        return product.owner == user or user.is_superuser or user.groups.filter(name='moderator').exists()
 
 
 class ProductDeleteView(DeleteView):

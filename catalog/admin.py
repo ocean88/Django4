@@ -6,9 +6,10 @@ from catalog.models import Product, Category
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'price', 'category')
-    list_filter = ('category',)
+    list_display = ('name', 'category', 'price', 'is_published', 'created_at', 'last_updated', 'owner')
+    list_filter = ('category', 'is_published', 'created_at', 'last_updated')
     search_fields = ('name', 'description')
+    readonly_fields = ('created_at', 'last_updated')
 
 
 @admin.register(Category)

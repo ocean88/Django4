@@ -3,7 +3,6 @@ from catalog.models import Product, Version
 
 
 class ProductForm(forms.ModelForm):
-    is_active_version = forms.BooleanField(label="Актуальная версия", required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -12,7 +11,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ('name', 'description', 'price', 'image', 'category')
+        fields = ('name', 'description', 'price', 'image', 'category', 'owner')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -39,3 +38,14 @@ class VersionForm(forms.ModelForm):
     class Meta:
         model = Version
         fields = '__all__'
+
+
+class ProductModeratorForm(forms.ModelForm):
+    is_published = forms.BooleanField(label='Опубликовать', required=False, widget=forms.RadioSelect(choices=(
+        (True, 'Да'),
+        (False, 'Нет'),
+    )))
+
+    class Meta:
+        model = Product
+        fields = ('name', 'description', 'is_published',)

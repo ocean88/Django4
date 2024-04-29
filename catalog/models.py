@@ -1,4 +1,5 @@
 from django.db import models
+from config import settings
 from users.models import User
 # Create your models here.
 NULLABLE = {'blank': True, 'null': True}
@@ -12,7 +13,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, help_text="Укажите автора", verbose_name="Автор", **NULLABLE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, **NULLABLE, verbose_name='Автор')
+    is_published = models.BooleanField(default=False, verbose_name='Опубликовано')
 
     def __str__(self):
         return f"Название: {self.name}"
