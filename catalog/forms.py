@@ -48,4 +48,4 @@ class ProductModeratorForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ('name', 'description', 'is_published',)
+        fields = ('name', 'description', 'price', 'image', 'category', 'is_published',)

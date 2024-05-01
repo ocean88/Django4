@@ -20,19 +20,15 @@ class ModeratorAccessMixin(AccessMixin):
     """
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            if request.user.groups.filter(name__in=['moderator']).exists():
+            if request.user.is_superuser or request.user.is_staff or request.user.groups.filter(name__in=['moderator']).exists():
                 return super().dispatch(request, *args, **kwargs)
             else:
-                # Пользователь не в группе "модератор" или "администратор",
+                # Пользователь не является модератором, суперпользователем или персоналом
                 # поэтому мы фильтруем только опубликованные материалы
                 self.queryset = self.get_queryset().filter(is_published=True)
                 return super().dispatch(request, *args, **kwargs)
         else:
             return self.handle_no_permission()
-
-    def test_func(self):
-        user = self.request.user
-        return user.is_superuser or user.groups.filter(name='moderator').exists()
 
 
 # Create your views here.
