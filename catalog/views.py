@@ -7,6 +7,7 @@ from catalog.models import Category, Product, Version
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import VersionForm
+from catalog.services import get_product_from_cache
 
 
 def get_active_version(product):
@@ -37,6 +38,9 @@ class CatalogListView(ListView):
     extra_context = {
         'title': 'Тест магазин'
     }
+
+    def get_queryset(self):
+        return get_product_from_cache()
 
 
 class ProductListView(LoginRequiredMixin,ModeratorAccessMixin, ListView):
